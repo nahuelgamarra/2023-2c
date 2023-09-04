@@ -1,26 +1,36 @@
-﻿@model Clase2.IntroMVC.Entidades.Serie
+﻿
+@using Clase2.IntroMVC.Entidades;
+@model Serie;
+
+
+
 
 @{
+    int cantidadDeTemporadas = Model.Temporadas != null ? Model.Temporadas.Count : 0;
+
 }
+<h2>@Model.Titulo</h2>
 
 <h1>Agregar Serie</h1>
-<form action="/Series/Agregar" method="post">
-
+<form action="/Series/ActualizarSerie" method="post">
+    
+    <input type="hidden" id="Titulo" name="Id" class="form-control" value="@Model.Id" />
     <div class="form-group">
         <label for="nombre">Titulo</label>
-        <input type="text" id="Titulo" name="Titulo" class="form-control" />
+        <input type="text" id="Titulo" name="Titulo" class="form-control" value="@Model.Titulo" />
     </div>
     <div class="form-group">
         <label for="nombre" >Descripcion</label>
-        <input type="text" id="Descripcion" name="Descripcion" class="form-control" />
+        <input type="text" id="Descripcion" name="Descripcion" class="form-control" value="@Model.Descripcion" />
     </div>
     <div class="form-group">
         <label for="nombre">Genero</label>
-        <input type="text" id="Genero" name="Genero" class="form-control" />
+        <input type="text" id="Genero" name="Genero" class="form-control" value="@Model.Genero" />
     </div>
     <div class="form-group">
         <label for="nombre">Cantidad de Temporadas</label>
         <input type="number" id="CantidadDeTemporadas" name="CantidadDeTemporadas" />
+
         </div>
     <div class="form-group">
         <label for="nombre">Esta En Netflix</label>
@@ -43,5 +53,5 @@
         <input type="checkbox" id="EstaEnHBO" name="EstaEnHBO" />
     </div>
     
-    <input type="submit" value="Agregar" class="btn btn-primary" />
+    <input type="submit" value="Actualizar" class="btn btn-primary" />
 </form>

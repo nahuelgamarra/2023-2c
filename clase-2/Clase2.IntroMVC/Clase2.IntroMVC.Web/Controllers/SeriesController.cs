@@ -21,7 +21,7 @@ public class SeriesController : Controller
     public IActionResult Agregar(Serie serie)
     {
         int cantTemporadas = int.Parse(string.IsNullOrEmpty(Request.Form["CantidadDeTemporadas"]) ? "0" : Request.Form["CantidadDeTemporadas"]);
-
+        Console.WriteLine(cantTemporadas+ " aca esta la cantidad de temporadas que viene");
         serie.EstaEnStarPlus = Request.Form["EstaEnStarPlus"] == "on"; 
         serie.EstaEnNetflix = Request.Form["EstaEnNetflix"] == "on"; 
         serie.EstaEnHBO = Request.Form["EstaEnHBO"] == "on"; 
@@ -34,5 +34,32 @@ public class SeriesController : Controller
     {
         var series = _seriesRepositorio.ObtenerTodas();
         return View(series);
+    }
+    public IActionResult Eliminar(int id)
+    {
+        _seriesRepositorio.Eliminar(id);
+        return RedirectToAction("Listado");
+    }
+    public IActionResult Actualizar(int id)
+    {
+        var serie = _seriesRepositorio.ObtenerPorId(id);
+        return View(serie);
+    }
+
+ 
+    public IActionResult ActualizarSerie(Serie serie) {
+
+        Console.WriteLine(serie.Temporadas + " aca esta la cantidad de temporadas que viene");
+
+
+        serie.EstaEnStarPlus = Request.Form["EstaEnStarPlus"] == "on";
+        serie.EstaEnNetflix = Request.Form["EstaEnNetflix"] == "on";
+        serie.EstaEnHBO = Request.Form["EstaEnHBO"] == "on";
+        serie.EstaEnDisney = Request.Form["EstaEnDisney"] == "on";
+        serie.EstaEnAmazon = Request.Form["EstaEnAmazon"] == "on";
+        _seriesRepositorio.Actualizar(serie);
+        return RedirectToAction("Listado");
+
+
     }
 }
