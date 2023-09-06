@@ -1,4 +1,5 @@
 using Clase2.IntroMvc.Logica;
+using Clase2.IntroMVC.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<ISeriesRepositorio, SeriesRepositorio>();
+builder.Services.AddScoped<IPeliculaRepositorio, PeliculasRepositorio>();
+builder.Services.AddScoped<IPeliculaModel, PeliculaModel>();
 
 var app = builder.Build();
 

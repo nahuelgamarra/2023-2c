@@ -1,0 +1,46 @@
+﻿@using Clase2.IntroMVC.Entidades;
+@model List<Pelicula>
+@{
+    ViewData["Title"] = "Listado";
+}
+
+<h1>Listado de peliculas</h1>
+<table class="table table-responsive table-striped ">
+    <thead>
+
+
+        <tr>
+            <td>ID pelicula</td>
+            <td>Titulo</td>
+            <td>Genero</td>
+            <td>Fecha estreno</tdFecha>
+            <td>Presupuesto  </td>
+            <td>Recaudacion  </td>
+            <td>Portada </td>
+            <td>Nomida al Oscar  </td>
+        </tr>
+
+    </thead>
+   
+    <tbody>
+        @foreach (Pelicula pelicula in Model)
+        {
+            <tr>
+                <td>@pelicula.Id</td>
+                <td>@pelicula.Titulo</td>
+                <td>@pelicula.Genero</td>
+                 <td>@pelicula.FechaEstreno</td>
+                <td>@pelicula.Presupuesto</td>
+                <td>@pelicula.Recaudacion</td>
+                <td>@pelicula.Imagen</td>
+                <td>@pelicula.NominadaAlOsccar</td>
+            </tr>
+        }
+       
+    </tbody>
+
+</table>
+
+
+<h2></h2>
+

@@ -48,10 +48,8 @@ public class SeriesController : Controller
 
  
     public IActionResult ActualizarSerie(Serie serie) {
-
-        Console.WriteLine(serie.Temporadas + " aca esta la cantidad de temporadas que viene");
-
-
+        int cantTemporadas = int.Parse(string.IsNullOrEmpty(Request.Form["CantidadDeTemporadas"]) ? "0" : Request.Form["CantidadDeTemporadas"]);
+   
         serie.EstaEnStarPlus = Request.Form["EstaEnStarPlus"] == "on";
         serie.EstaEnNetflix = Request.Form["EstaEnNetflix"] == "on";
         serie.EstaEnHBO = Request.Form["EstaEnHBO"] == "on";
