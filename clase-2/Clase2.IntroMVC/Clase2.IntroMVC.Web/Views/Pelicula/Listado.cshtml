@@ -7,40 +7,72 @@
 <h1>Listado de peliculas</h1>
 <table class="table table-responsive table-striped ">
     <thead>
-
-
         <tr>
             <td>ID pelicula</td>
             <td>Titulo</td>
             <td>Genero</td>
-            <td>Fecha estreno</tdFecha>
+            <td>Fecha estreno</td>
             <td>Presupuesto  </td>
             <td>Recaudacion  </td>
             <td>Portada </td>
             <td>Nomida al Oscar  </td>
+            <th>Acciones</th>
         </tr>
 
     </thead>
-   
+
     <tbody>
         @foreach (Pelicula pelicula in Model)
         {
             <tr>
-                <td>@pelicula.Id</td>
-                <td>@pelicula.Titulo</td>
-                <td>@pelicula.Genero</td>
-                 <td>@pelicula.FechaEstreno</td>
-                <td>@pelicula.Presupuesto</td>
-                <td>@pelicula.Recaudacion</td>
-                <td>@pelicula.Imagen</td>
-                <td>@pelicula.NominadaAlOsccar</td>
+                <td class="align-middle">@pelicula.Id</td>
+                <td class="align-middle">@pelicula.Titulo</td>
+                <td class="align-middle">@pelicula.Genero</td>
+                <td class="align-middle">@pelicula.FechaEstreno</td>
+                <td class="align-middle">
+                    @if (pelicula.Presupuesto.HasValue)
+                    {
+                        @: USD @pelicula.Presupuesto
+                    }
+                </td>
+                <td class="align-middle">
+                    @if (pelicula.Recaudacion.HasValue)
+                    {
+                        @:  USD  @pelicula.Recaudacion
+                    }
+                </td>
+
+                <td class="align-middle"> @Html.Partial("_PortadaPartial", pelicula) </td>
+
+                <td class="align-middle">
+                    @if (pelicula.NominadaAlOsccar.Value)
+                    {
+                        @: Fue nominada
+                    }else
+                    {
+                        @: No fue nominada
+                    }
+                </td>
+                <td class="align-middle">
+                    <div class="d-flex align-items-center">
+                        <a class="nav-link text-dark mr-2"
+                           asp-area=""
+                           asp-controller="Pelicula"
+                           asp-action="Eliminar"
+                           asp-route-id="@pelicula.Id">Eliminar</a>
+                        <a class="nav-link text-dark"
+                           asp-area=""
+                           asp-controller="Pelicula"
+                           asp-action="Actualizar"
+                           asp-route-id="@pelicula.Id">Actualizar</a>
+                    </div>
+                </td>
+           
             </tr>
         }
-       
     </tbody>
 
 </table>
 
 
-<h2></h2>
 

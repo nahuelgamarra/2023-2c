@@ -1,26 +1,31 @@
 ﻿using Clase2.IntroMVC.Entidades;
 using Clase2.IntroMVC.Web.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace Clase2.IntroMVC.Web.Controllers
 {
     public class PeliculaController : Controller
     {
-        private IPeliculaModel _model;
+        private readonly IPeliculaModel _model;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public PeliculaController(IPeliculaModel model)
+        public PeliculaController(IPeliculaModel model, IWebHostEnvironment hostingEnvironment)
         {
             _model = model;
+            _hostingEnvironment = hostingEnvironment;
         }
-        // GET: PeliculaController
+
         public IActionResult Listado()
         {
             List<Pelicula> listado = _model.ObtenerTodas();
             return View(listado);
         }
 
-        // GET: PeliculaController
         public IActionResult ObtenerPorId(int id)
         {
             Pelicula pelicula = null;
@@ -33,27 +38,57 @@ namespace Clase2.IntroMVC.Web.Controllers
             {
                 return RedirectToAction("Listado");
             }
-
         }
 
-        // GET: PeliculaController/Create
         public IActionResult Agregar()
         {
             return View();
         }
 
-        // POST: PeliculaController/Create
         [HttpPost]
-        public IActionResult Agregar(Pelicula pelicula)
+        public IActionResult Agregar(Pelicula pelicula, IFormFile Imagen)
         {
             try
             {
+                if (Imagen != null && Imagen.Length > 0)
+                {
+                    // Obtener la extensión del archivo de imagen
+                    var extension = Path.GetExtension(Imagen.FileName).ToLower();
+
+                    // Lista de extensiones permitidas (por ejemplo, png, jpg, jpeg, gif)
+                    var extensionesPermitidas = new[] { ".png", ".jpg", ".jpeg", ".gif" };
+
+                    if (!extensionesPermitidas.Contains(extension))
+                    {
+                        // La extensión no está permitida, puedes manejar el error o redirigir a una página de error
+                        ModelState.AddModelError("Imagen", "La extensión de la imagen no es válida. Debe ser png, jpg, jpeg o gif.");
+                        return View(pelicula);
+                    }
+
+                    // Cambiar el nombre del archivo de imagen al título de la película
+                    var tituloLimpio = new string(pelicula.Titulo
+                        .Where(c => !char.IsWhiteSpace(c) && !Path.GetInvalidFileNameChars().Contains(c))
+                        .ToArray());
+
+                    var nombreArchivo = tituloLimpio + extension;
+                    var rutaDeCarpetaDondeGuardar = Path.Combine(_hostingEnvironment.WebRootPath, "images", "portada");
+                    var rutaDeGuardado = Path.Combine(rutaDeCarpetaDondeGuardar, nombreArchivo);
+
+                    using (var stream = new FileStream(rutaDeGuardado, FileMode.Create))
+                    {
+                        Imagen.CopyTo(stream);
+                    }
+
+                    // Asignar el nombre del archivo a la propiedad Imagen de la película
+                    pelicula.Imagen = nombreArchivo;
+                }
+
                 if (DateOnly.TryParse(Request.Form["FechaEstreno"], out DateOnly fechaEstreno))
                 {
                     pelicula.FechaEstreno = fechaEstreno;
                 }
 
-                Console.WriteLine(Request.Form["FechaEstreno"]);
+                pelicula.NominadaAlOsccar = Request.Form["NominadaAlOscar"] == "on";
 
                 _model.AgregarPelicula(pelicula);
 
@@ -65,46 +100,44 @@ namespace Clase2.IntroMVC.Web.Controllers
             }
         }
 
-        // GET: PeliculaController/Edit/5
-        public IActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: PeliculaController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, IFormCollection collection)
-        {
+        public IActionResult Eliminar(int id) {
+           
             try
             {
-                return RedirectToAction(nameof(Index));
+                _model.EliminarPelicula(id);
+                return RedirectToAction("Listado");
+
             }
             catch
             {
-                return View();
+                  return RedirectToAction("Listado");
             }
+
         }
 
-        // GET: PeliculaController/Delete/5
-        public IActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: PeliculaController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id, IFormCollection collection)
-        {
+        public IActionResult Actualizar(int id) {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var pelicula = _model.ObtenerPorId(id);
+              
+                return View(pelicula);
             }
-            catch
+            catch (Exception)
             {
-                return View();
+                return View(null);  
             }
+           
+       
         }
+
+        public IActionResult ActualizarPelicula(Pelicula pelicula) 
+        {
+
+            return RedirectToAction("Listado");
+        }
+
+
     }
+
+
 }

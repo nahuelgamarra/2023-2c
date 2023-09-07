@@ -4,7 +4,7 @@
 }
 
 <h1>Agregar Pelicula </h1>
-<form action="/Pelicula/Agregar" method="post">
+<form action="/Pelicula/Agregar" method="post" enctype="multipart/form-data">
 
     <div class="form-group">
         <label for="nombre">Titulo</label>
@@ -28,11 +28,11 @@
     </div>
         <div class="form-group">
         <label for="nombre">Nomida al Oscar</label>
-        <input type="checkbox" id="NomidadaAlOscar" name="NomidadaAlOscar" />
+        <input type="checkbox" id="NominadaAlOscar" name="NominadaAlOscar" />
     </div>
         <div class="form-group">
         <label for="nombre">Imagen</label>
-        <input type="text" id="Imagen" name="Imagen" class="form-control" />
+        <input type="file" id="Imagen" name="Imagen" class="form-control" />
     </div>
     
     <input type="submit" value="Agregar" class="btn btn-primary  form-control" />

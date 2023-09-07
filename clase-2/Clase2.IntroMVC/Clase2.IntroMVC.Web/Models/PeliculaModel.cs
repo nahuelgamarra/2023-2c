@@ -29,7 +29,17 @@ public class PeliculaModel : IPeliculaModel
 
     public void EliminarPelicula(int id)
     {
-        _peliculaRepositorio.Eliminar(id);
+        try
+        {
+            _peliculaRepositorio.ObtenerPorId(id);
+            _peliculaRepositorio.Eliminar(id);
+        }
+        catch (Exception)
+        {
+
+            throw new Exception("No se pudo eliminar la pelicula ");
+        }
+       
     }
 
     public Pelicula ObtenerPorId(int id)
