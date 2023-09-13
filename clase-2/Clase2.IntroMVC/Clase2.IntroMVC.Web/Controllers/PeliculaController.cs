@@ -52,41 +52,16 @@ namespace Clase2.IntroMVC.Web.Controllers
             {
                 if (Imagen != null && Imagen.Length > 0)
                 {
-                    // Obtener la extensión del archivo de imagen
-                    var extension = Path.GetExtension(Imagen.FileName).ToLower();
-
-                    // Lista de extensiones permitidas (por ejemplo, png, jpg, jpeg, gif)
-                    var extensionesPermitidas = new[] { ".png", ".jpg", ".jpeg", ".gif" };
-
-                    if (!extensionesPermitidas.Contains(extension))
+                    if (!EsExtensionValida(Imagen))
                     {
-                        // La extensión no está permitida, puedes manejar el error o redirigir a una página de error
                         ModelState.AddModelError("Imagen", "La extensión de la imagen no es válida. Debe ser png, jpg, jpeg o gif.");
                         return View(pelicula);
                     }
 
-                    // Cambiar el nombre del archivo de imagen al título de la película
-                    var tituloLimpio = new string(pelicula.Titulo
-                        .Where(c => !char.IsWhiteSpace(c) && !Path.GetInvalidFileNameChars().Contains(c))
-                        .ToArray());
-
-                    var nombreArchivo = tituloLimpio + extension;
-                    var rutaDeCarpetaDondeGuardar = Path.Combine(_hostingEnvironment.WebRootPath, "images", "portada");
-                    var rutaDeGuardado = Path.Combine(rutaDeCarpetaDondeGuardar, nombreArchivo);
-
-                    using (var stream = new FileStream(rutaDeGuardado, FileMode.Create))
-                    {
-                        Imagen.CopyTo(stream);
-                    }
-
-                    // Asignar el nombre del archivo a la propiedad Imagen de la película
-                    pelicula.Imagen = nombreArchivo;
+                    GuardarImagen(pelicula, Imagen);
                 }
 
-                if (DateOnly.TryParse(Request.Form["FechaEstreno"], out DateOnly fechaEstreno))
-                {
-                    pelicula.FechaEstreno = fechaEstreno;
-                }
+                SetFechaEstreno(pelicula);
 
                 pelicula.NominadaAlOsccar = Request.Form["NominadaAlOscar"] == "on";
 
@@ -96,17 +71,15 @@ namespace Clase2.IntroMVC.Web.Controllers
             }
             catch
             {
-                return RedirectToAction("Listado");
+                return RedirectToAction("Agregar", pelicula);
             }
         }
-
         public IActionResult Eliminar(int id) {
            
             try
             {
                 _model.EliminarPelicula(id);
                 return RedirectToAction("Listado");
-
             }
             catch
             {
@@ -126,18 +99,74 @@ namespace Clase2.IntroMVC.Web.Controllers
             {
                 return View(null);  
             }
-           
+        }
        
-        }
 
-        public IActionResult ActualizarPelicula(Pelicula pelicula) 
+
+       [HttpPost]
+        public IActionResult ActualizarPelicula(Pelicula pelicula,  IFormFile Imagen)
         {
+            try {
+                var peliculaExistente= _model.ObtenerPorId(pelicula.Id);
 
-            return RedirectToAction("Listado");
+                if (Imagen != null && Imagen.Length > 0)
+                {
+                    if (!EsExtensionValida(Imagen))
+                    {
+                        ModelState.AddModelError("Imagen", "La extensión de la imagen no es válida. Debe ser png, jpg, jpeg o gif.");
+                        return View(pelicula);
+                    }
+
+                    GuardarImagen(peliculaExistente, Imagen);
+                }
+                SetFechaEstreno(pelicula);
+                peliculaExistente.FechaEstreno= pelicula.FechaEstreno;
+                peliculaExistente.Titulo= pelicula.Titulo;
+                peliculaExistente.Genero= pelicula.Genero;
+                peliculaExistente.Recaudacion = pelicula.Recaudacion;
+                peliculaExistente.Presupuesto= pelicula.Presupuesto;
+                peliculaExistente.NominadaAlOsccar = Request.Form["NominadaAlOscar"] == "on";
+                _model.ActulizarPelicula(peliculaExistente);
+                return RedirectToAction("Listado");
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Listado");
+            }
+
+        }
+        private void SetFechaEstreno(Pelicula pelicula)
+        {
+            if (DateOnly.TryParse(Request.Form["FechaEstreno"], out DateOnly fechaEstreno))
+            {
+                pelicula.FechaEstreno = fechaEstreno;
+            }
+        }
+        private bool EsExtensionValida(IFormFile imagen)
+        {
+            var extension = Path.GetExtension(imagen.FileName).ToLower();
+            var extensionesPermitidas = new[] { ".png", ".jpg", ".jpeg", ".gif" };
+            return extensionesPermitidas.Contains(extension);
         }
 
+        private void GuardarImagen(Pelicula pelicula, IFormFile imagen)
+        {
+            var tituloLimpio = new string(pelicula.Titulo
+                .Where(c => !char.IsWhiteSpace(c) && !Path.GetInvalidFileNameChars().Contains(c))
+                .ToArray());
 
+            var extension = Path.GetExtension(imagen.FileName).ToLower();
+            var nombreArchivo = tituloLimpio + extension;
+            var rutaDeCarpetaDondeGuardar = Path.Combine(_hostingEnvironment.WebRootPath, "images", "portada");
+            var rutaDeGuardado = Path.Combine(rutaDeCarpetaDondeGuardar, nombreArchivo);
+
+            using (var stream = new FileStream(rutaDeGuardado, FileMode.Create))
+            {
+                imagen.CopyTo(stream);
+            }
+
+            pelicula.Imagen = nombreArchivo;
+        }
     }
-
-
 }

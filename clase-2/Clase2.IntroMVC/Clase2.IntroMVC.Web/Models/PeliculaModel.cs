@@ -9,6 +9,7 @@ public interface IPeliculaModel
     Pelicula ObtenerPorId(int id);
     void AgregarPelicula(Pelicula pelicula);
     void EliminarPelicula(int id);
+    void ActulizarPelicula(Pelicula pelicula);
 
 }
 
@@ -19,6 +20,20 @@ public class PeliculaModel : IPeliculaModel
     public PeliculaModel(IPeliculaRepositorio peliculasRepositorio)
     {
         _peliculaRepositorio = peliculasRepositorio;
+    }
+
+    public void ActulizarPelicula(Pelicula pelicula)
+    {
+        try
+        {
+            var peliculaExistente = ObtenerPorId(pelicula.Id);
+            _peliculaRepositorio.Actualizar(pelicula);
+        }catch(Exception ex)
+        {
+            throw new Exception("No se pudo actualizar la pelicula");
+          
+        }
+       
     }
 
     public void AgregarPelicula(Pelicula pelicula)

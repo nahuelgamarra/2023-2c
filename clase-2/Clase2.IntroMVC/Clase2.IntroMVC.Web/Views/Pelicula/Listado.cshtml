@@ -8,7 +8,6 @@
 <table class="table table-responsive table-striped ">
     <thead>
         <tr>
-            <td>ID pelicula</td>
             <td>Titulo</td>
             <td>Genero</td>
             <td>Fecha estreno</td>
@@ -25,7 +24,6 @@
         @foreach (Pelicula pelicula in Model)
         {
             <tr>
-                <td class="align-middle">@pelicula.Id</td>
                 <td class="align-middle">@pelicula.Titulo</td>
                 <td class="align-middle">@pelicula.Genero</td>
                 <td class="align-middle">@pelicula.FechaEstreno</td>
@@ -45,14 +43,9 @@
                 <td class="align-middle"> @Html.Partial("_PortadaPartial", pelicula) </td>
 
                 <td class="align-middle">
-                    @if (pelicula.NominadaAlOsccar.Value)
-                    {
-                        @: Fue nominada
-                    }else
-                    {
-                        @: No fue nominada
-                    }
+                    @(pelicula.NominadaAlOsccar.HasValue ? (pelicula.NominadaAlOsccar.Value ? "Fue nominada" : "No fue nominada") : "Valor desconocido")
                 </td>
+
                 <td class="align-middle">
                     <div class="d-flex align-items-center">
                         <a class="nav-link text-dark mr-2"

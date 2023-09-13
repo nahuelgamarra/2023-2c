@@ -13,6 +13,8 @@ public interface IPeliculaRepositorio
     Pelicula? ObtenerPorId(int id);
     void Actualizar(Pelicula pelicula);
     void Eliminar(int id);
+
+   
 }
 public class PeliculasRepositorio : IPeliculaRepositorio
 {
@@ -22,7 +24,18 @@ public class PeliculasRepositorio : IPeliculaRepositorio
     private static List<Pelicula> _peliculas = new List<Pelicula>();
     public void Actualizar(Pelicula pelicula)
     {
-        throw new NotImplementedException();
+        var peliculaExistente = ObtenerPorId((int)pelicula.Id);
+        if (peliculaExistente == null) {
+            throw new NotImplementedException();
+        }
+        peliculaExistente.Titulo = pelicula.Titulo;
+        peliculaExistente.Genero = pelicula.Genero;
+        peliculaExistente.FechaEstreno = pelicula.FechaEstreno;
+        peliculaExistente.Presupuesto = pelicula.Presupuesto;
+        peliculaExistente.Recaudacion= pelicula.Recaudacion;
+        peliculaExistente.Imagen = pelicula.Imagen;
+        peliculaExistente.NominadaAlOsccar = pelicula.NominadaAlOsccar;
+        
     }
 
     public void Agregar(Pelicula pelicula)

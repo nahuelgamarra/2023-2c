@@ -8,8 +8,8 @@
   
 }
 <h1>Actualizar Pelicula </h1>
-<form action="/Pelicula/Actualizar" method="post" enctype="multipart/form-data">
-
+<form action="/Pelicula/ActualizarPelicula" method="post" enctype="multipart/form-data">
+    <input type="hidden" id="Titulo" name="Id" class="form-control" value="@Model.Id" />
     <div class="form-group">
         <label for="nombre">Titulo</label>
         <input type="text" id="Titulo" name="Titulo" class="form-control" value="@Model.Titulo" />
@@ -31,12 +31,12 @@
         <input type="number" id="Recaudacion" name="Recaudacion" class="form-control" value="@Model.Recaudacion" />
     </div>
     <div class="form-group">
-        <label for="nombre">Nomida al Oscar</label>
-        <input type="checkbox" id="NominadaAlOscar" name="NominadaAlOscar"  />
+        <label for="nombre">Nominada al Oscar</label>
+        <input type="checkbox" id="NominadaAlOscar" name="NominadaAlOscar" @(Model.NominadaAlOsccar.GetValueOrDefault() ? "checked" : "") />
     </div>
     <div class="form-group">
         <label for="nombre">Imagen</label>
-        <input type="file" id="Imagen" name="Imagen" class="form-control" />
+        <input type="file" id="Imagen" name="Imagen" class="form-control" value="@Model.Imagen" />
     </div>
 
     <input type="submit" value="Actualizar" class="btn btn-primary  form-control" />
