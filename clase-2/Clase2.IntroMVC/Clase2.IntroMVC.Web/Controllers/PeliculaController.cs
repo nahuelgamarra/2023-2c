@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Clase2.IntroMVC.Web.Controllers
 {
@@ -42,38 +43,41 @@ namespace Clase2.IntroMVC.Web.Controllers
 
         public IActionResult Agregar()
         {
-            return View();
+            PeliculaViewModel model = new PeliculaViewModel();
+            model.NominadaAlOscar = true;
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Agregar(Pelicula pelicula, IFormFile Imagen)
+        public IActionResult Agregar(PeliculaViewModel model)
         {
-            try
+ 
+            if (!model.EsExtensionValida())
             {
-                if (Imagen != null && Imagen.Length > 0)
-                {
-                    if (!EsExtensionValida(Imagen))
-                    {
-                        ModelState.AddModelError("Imagen", "La extensión de la imagen no es válida. Debe ser png, jpg, jpeg o gif.");
-                        return View(pelicula);
-                    }
+                ModelState.AddModelError("Imagen", "La extensión del archivo no es válida. Solo se permiten archivos con extensiones .jpg, .jpeg, .png o .gif.");
+            }
 
-                    GuardarImagen(pelicula, Imagen);
-                }
-
+            if (ModelState.IsValid) 
+            {
+                Pelicula pelicula= new Pelicula();
+                pelicula.Titulo=model.Titulo;
+                pelicula.Genero=model.Genero;
+                pelicula.Presupuesto=model.Presupuesto;
+                pelicula.Recaudacion=model.Recaudacion;
+                pelicula.NominadaAlOsccar = model.NominadaAlOscar;
                 SetFechaEstreno(pelicula);
-
-                pelicula.NominadaAlOsccar = Request.Form["NominadaAlOscar"] == "on";
+                GuardarImagen(pelicula, model.Imagen);
 
                 _model.AgregarPelicula(pelicula);
 
                 return RedirectToAction("Listado");
             }
-            catch
-            {
-                return RedirectToAction("Agregar", pelicula);
-            }
+
+            return View(model);
+
         }
+
+ 
         public IActionResult Eliminar(int id) {
            
             try
@@ -101,8 +105,6 @@ namespace Clase2.IntroMVC.Web.Controllers
             }
         }
        
-
-
        [HttpPost]
         public IActionResult ActualizarPelicula(Pelicula pelicula,  IFormFile Imagen)
         {
@@ -166,7 +168,7 @@ namespace Clase2.IntroMVC.Web.Controllers
                 imagen.CopyTo(stream);
             }
 
-            pelicula.Imagen = nombreArchivo;
+            pelicula.Imagen= nombreArchivo;
         }
     }
 }
